@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentimate - The agent who animates your ideas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #FF3366, #FF6B6B, #4ECDC4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding-top: 120px;
+            padding-bottom: 2rem;
+        }
+
+        .hero-content {
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: #888;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #FF3366, #FF6B6B);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            margin-bottom: 4rem;
+        }
+
+        .demo-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        .command-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: monospace;
+            margin-bottom: 2rem;
+        }
+
+        .demo-card {
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 300px;
+            margin: 0 auto;
+            position: relative;
+            transform-origin: center center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #FF3366, #4ECDC4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .demo-card .content-lines {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .demo-card .content-lines:nth-child(2) {
+            width: 80%;
+        }
+
+        .demo-card .content-lines:nth-child(3) {
+            width: 60%;
+        }
+
+        .demo-card .view-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: #fff;
+            text-decoration: none;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            background: linear-gradient(45deg, #FF3366, #FF6B6B);
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .features-section {
+            padding-top: 0;
+            padding-bottom: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.1), rgba(255,255,255,0));
+            margin: 1rem auto;
+            max-width: 800px;
+        }
+
+        .features-title {
+            font-size: 4.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            opacity: 0;
+            transform: translateY(20px);
+            line-height: 1.2;
+            font-weight: bold;
+        }
+
+        .features-subtitle {
+            font-size: 1.5rem;
+            text-align: center;
+            color: #888;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            opacity: 0;
+        }
+
+        .feature-card {
+            background: rgba(20, 20, 20, 0.4);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        .feature-card h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #888;
+            line-height: 1.6;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .faq-section {
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .faq-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 0;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            color: #fff;
+            padding: 0.25rem 0;
+        }
+
+        .faq-arrow {
+            width: 24px;
+            height: 24px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-arrow::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 12px;
+            height: 2px;
+            background: #fff;
+            transform: rotate(45deg);
+            transform-origin: right;
+        }
+
+        .faq-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 12px;
+            height: 2px;
+            background: #fff;
+            transform: rotate(-45deg);
+            transform-origin: right;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            color: #888;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding-top: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <div class="logo">Agentimate</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="hero-content">
+            <h1>Agentimate</h1>
+            <p>The agent who animates your ideas</p>
+            <a href="#get-started" class="cta-button">Start Designing</a>
+        </div>
+        
+        <div class="demo-container">
+            <input type="text" class="command-input" value="Make it vertical and hover..." readonly>
+            <div class="demo-card">
+                <h3>My Life's Work</h3>
+                <div class="content-lines"></div>
+                <div class="content-lines"></div>
+                <div class="content-lines"></div>
+                <a href="#" class="view-button">View Project →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <section class="features-section">
+        <h2 class="features-title">A new era for product<br>builders and developers.</h2>
+        <p class="features-subtitle">Agentimate is your AI agent who animates.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Product teams</h3>
+                <p>Empower non-technical team members to code. Align on abstract ideas by building real prototypes.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Founders, solopreneurs & indie-hackers</h3>
+                <p>Iterate and validate in minutes. Launch a full product in less than a day.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Product designers</h3>
+                <p>Bring your design idea to life without tedious prototyping work in tools like Figma.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Human software engineers</h3>
+                <p>Ship an entire frontend in one prompt. Let Lovable fix bugs and do your UI edits.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="faq-section">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-question">
+                    What is Agentimate and how does it work?
+                    <div class="faq-arrow"></div>
+                </div>
+                <div class="faq-answer">
+                    Agentimate is an AI-powered animation tool that helps you bring your ideas to life through code. It understands natural language commands and converts them into beautiful animations and interactions.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    What does the free plan include?
+                    <div class="faq-arrow"></div>
+                </div>
+                <div class="faq-answer">
+                    The free plan includes basic animation capabilities, access to our core library of effects, and the ability to export your animations for personal projects.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    What tech stacks does Agentimate know?
+                    <div class="faq-arrow"></div>
+                </div>
+                <div class="faq-answer">
+                    Agentimate works with modern web technologies including HTML, CSS, JavaScript, React, Vue, and more. It can generate animations for any framework or vanilla web projects.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    Who owns the projects and code?
+                    <div class="faq-arrow"></div>
+                </div>
+                <div class="faq-answer">
+                    You retain full ownership of all projects and code generated using Agentimate. The code is yours to use, modify, and distribute as you see fit.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    How much does it cost to use?
+                    <div class="faq-arrow"></div>
+                </div>
+                <div class="faq-answer">
+                    We offer flexible pricing plans starting from free. Premium plans with advanced features and higher usage limits are available for professionals and teams.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    Where can I find out more?
+                    <div class="faq-arrow"></div>
+                </div>
+                <div class="faq-answer">
+                    Visit our documentation, join our community on Discord, or reach out to our support team for more information about Agentimate's capabilities.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <script>
+        // Animate hero elements
+        anime({
+            targets: '.hero h1',
+            opacity: [0, 1],
+            translateY: [20, 0],
+            easing: 'easeOutExpo',
+            duration: 1000,
+            delay: 300
+        });
+
+        anime({
+            targets: '.hero p',
+            opacity: [0, 1],
+            translateY: [20, 0],
+            easing: 'easeOutExpo',
+            duration: 1000,
+            delay: 500
+        });
+
+        anime({
+            targets: '.cta-button',
+            opacity: [0, 1],
+            translateY: [20, 0],
+            easing: 'easeOutExpo',
+            duration: 1000,
+            delay: 700
+        });
+
+        // Demo container fade in
+        anime({
+            targets: '.demo-container',
+            opacity: [0, 1],
+            duration: 1000,
+            delay: 1000
+        });
+
+        // Card animation sequence
+        let currentStep = 0;
+        const steps = [
+            {
+                command: "Make it vertical and hover...",
+                animation: {
+                    translateY: [-10, 10],
+                    duration: 2000,
+                    direction: 'alternate',
+                    loop: false,
+                    easing: 'easeInOutQuad'
+                }
+            },
+            {
+                command: "Now rotate it...",
+                animation: {
+                    translateY: 0,
+                    rotate: '360deg',
+                    duration: 2000,
+                    easing: 'easeInOutQuad'
+                }
+            },
+            {
+                command: "Stop rotating and make it big...",
+                animation: {
+                    scale: 1.2,
+                    rotate: '0deg',
+                    duration: 1500,
+                    easing: 'easeOutElastic(1, .5)'
+                }
+            },
+            {
+                command: "enter animation",
+                animation: {
+                    scale: 1,
+                    translateY: 0,
+                    duration: 1000,
+                    easing: 'easeOutBounce'
+                }
+            }
+        ];
+
+        function playNextAnimation() {
+            // Update command input
+            document.querySelector('.command-input').value = steps[currentStep].command;
+            
+            // Create and play the animation
+            const animation = anime({
+                targets: '.demo-card',
+                ...steps[currentStep].animation,
+                complete: () => {
+                    // Move to next step
+                    currentStep = (currentStep + 1) % steps.length;
+                    // Add a small delay between animations
+                    setTimeout(playNextAnimation, 500);
+                }
+            });
+        }
+
+        // Start the animation sequence
+        playNextAnimation();
+
+        // Animate features section when it comes into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Animate title
+                    anime({
+                        targets: '.features-title',
+                        opacity: [0, 1],
+                        translateY: [20, 0],
+                        duration: 1000,
+                        easing: 'easeOutExpo'
+                    });
+
+                    // Animate subtitle
+                    anime({
+                        targets: '.features-subtitle',
+                        opacity: [0, 1],
+                        translateY: [20, 0],
+                        duration: 1000,
+                        delay: 200,
+                        easing: 'easeOutExpo'
+                    });
+
+                    // Animate cards with stagger
+                    anime({
+                        targets: '.feature-card',
+                        opacity: [0, 1],
+                        translateY: [20, 0],
+                        duration: 800,
+                        delay: anime.stagger(200, {start: 400}),
+                        easing: 'easeOutExpo'
+                    });
+
+                    observer.disconnect();
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        observer.observe(document.querySelector('.features-section'));
+
+        // FAQ Section Animations
+        const faqObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Animate title
+                    anime({
+                        targets: '.faq-title',
+                        opacity: [0, 1],
+                        translateY: [20, 0],
+                        duration: 1000,
+                        easing: 'easeOutExpo'
+                    });
+
+                    // Animate FAQ items with stagger
+                    anime({
+                        targets: '.faq-item',
+                        opacity: [0, 1],
+                        translateY: [20, 0],
+                        duration: 800,
+                        delay: anime.stagger(100),
+                        easing: 'easeOutExpo'
+                    });
+
+                    faqObserver.disconnect();
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        faqObserver.observe(document.querySelector('.faq-section'));
+
+        // FAQ Toggle functionality
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const wasActive = item.classList.contains('active');
+                
+                // Close all FAQ items
+                document.querySelectorAll('.faq-item').forEach(otherItem => {
+                    otherItem.classList.remove('active');
+                });
+
+                // Toggle clicked item
+                if (!wasActive) {
+                    item.classList.add('active');
+                }
+
+                // Animate the arrow
+                anime({
+                    targets: item.querySelector('.faq-arrow'),
+                    rotate: wasActive ? 0 : 180,
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            });
+        });
+
+        // Floating shapes animation
+        const shapes = document.querySelectorAll('.shape');
+        shapes.forEach((shape, index) => {
+            const size = anime.random(50, 200);
+            shape.style.width = `${size}px`;
+            shape.style.height = `${size}px`;
+            
+            shape.style.left = `${anime.random(0, 100)}%`;
+            shape.style.top = `${anime.random(0, 100)}%`;
+
+            anime({
+                targets: shape,
+                translateX: () => anime.random(-200, 200),
+                translateY: () => anime.random(-200, 200),
+                scale: () => anime.random(0.8, 1.2),
+                easing: 'easeInOutQuad',
+                duration: () => anime.random(3000, 5000),
+                complete: function(anim) {
+                    anim.restart();
+                }
+            });
+        });
+
+        // Nav links hover effect
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                anime({
+                    targets: link,
+                    scale: 1.1,
+                    duration: 300,
+                    easing: 'easeOutElastic(1, .5)'
+                });
+            });
+
+            link.addEventListener('mouseleave', () => {
+                anime({
+                    targets: link,
+                    scale: 1,
+                    duration: 300,
+                    easing: 'easeOutElastic(1, .5)'
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
